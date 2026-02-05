@@ -68,8 +68,11 @@ if st.button('Predict'):
     vector_input = tfidf.transform([transformed_sms])
     # 3. predict
     result = model.predict(vector_input)[0]
-    # 4. Display
+    
+# 4. Display with Colors and Effects
     if result == 1:
-        st.header("Spam")
+        st.error("🚨 **SPAM DETECTED!**")
+        st.snow() 
     else:
-        st.header("Not Spam")
+        st.success("✅ **NOT SPAM**")
+        st.balloons()
