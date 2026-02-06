@@ -48,22 +48,24 @@ def transform_text(text):
 # --- 4. GENERIC PATH & MODEL LOADING ---
 @st.cache_resource
 def load_assets():
-    # Get the absolute path to the directory containing app.py
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # On Streamlit Cloud, paths should be relative to the root of the repo
+    # No need for os.path.abspath(__file__) which can be messy on Linux
+    vectorizer_path = 'model/vectorizer_new.pkl'
+    model_path = 'model/model_new.pkl'
     
-    # Generic paths to the files inside your 'model' folder
-    vectorizer_path = os.path.join(current_dir, 'model', 'vectorizer_new.pkl')
-    model_path = os.path.join(current_dir, 'model', 'model_new.pkl')
-    
-    # Load the pickle files
     try:
+        # Check if files exist first to give a better error message
+        if not os.path.exists(vectorizer_path) or not os.path.exists(model_path):
+             st.error(f"Looking for files at: {os.getcwd()}/{vectorizer_path}")
+             return None, None
+             
         with open(vectorizer_path, 'rb') as f:
             tfidf = pickle.load(f)
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
         return tfidf, model
-    except FileNotFoundError:
-        st.error(f"Error: Model files not found in {os.path.join(current_dir, 'model')}. Please check your folder structure.")
+    except Exception as e:
+        st.error(f"Error loading assets: {e}")
         return None, None
 
 tfidf, model = load_assets()
