@@ -52,13 +52,15 @@ def load_assets():
     current_dir = os.path.dirname(os.path.abspath(__file__))
     
     # Generic paths to the files inside your 'model' folder
-    vectorizer_path = os.path.join(current_dir, 'model', 'vectorizer.pkl')
-    model_path = os.path.join(current_dir, 'model', 'model.pkl')
+    vectorizer_path = os.path.join(current_dir, 'model', 'vectorizer_new.pkl')
+    model_path = os.path.join(current_dir, 'model', 'model_new.pkl')
     
     # Load the pickle files
     try:
-        tfidf = pickle.load(open(vectorizer_path, 'rb'))
-        model = pickle.load(open(model_path, 'rb'))
+        with open(vectorizer_path, 'rb') as f:
+            tfidf = pickle.load(f)
+        with open(model_path, 'rb') as f:
+            model = pickle.load(f)
         return tfidf, model
     except FileNotFoundError:
         st.error(f"Error: Model files not found in {os.path.join(current_dir, 'model')}. Please check your folder structure.")
@@ -92,7 +94,7 @@ if st.button('Analyze Message'):
             # 1. Preprocess
             transformed_sms = transform_text(input_sms)
             # 2. Vectorize
-            vector_input = tfidf.transform([transformed_sms])
+            vector_input = tfidf.transform([transformed_sms]).toarray()
             # 3. Predict
             result = model.predict(vector_input)[0]
             
